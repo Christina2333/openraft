@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Dynamic Membership - openraft</title>
+        <title>FAQ - openraft</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="The openraft user guide.">
@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">2.</strong> FAQ</a></li><li class="chapter-item expanded "><a href="cluster-controls.html"><strong aria-hidden="true">3.</strong> Cluster Controls</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cluster-formation.html"><strong aria-hidden="true">3.1.</strong> Cluster Formation</a></li><li class="chapter-item expanded "><a href="dynamic-membership.html" class="active"><strong aria-hidden="true">3.2.</strong> Dynamic Membership</a></li><li class="chapter-item expanded "><a href="node-lifecycle.html"><strong aria-hidden="true">3.3.</strong> Node lifecycle</a></li></ol></li><li class="chapter-item expanded "><a href="metrics.html"><strong aria-hidden="true">4.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="internal.html"><strong aria-hidden="true">5.</strong> Internal</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">5.1.</strong> Architecture</a></li><li class="chapter-item expanded "><a href="threading.html"><strong aria-hidden="true">5.2.</strong> Threads</a></li><li class="chapter-item expanded "><a href="heartbeat.html"><strong aria-hidden="true">5.3.</strong> Heartbeat</a></li><li class="chapter-item expanded "><a href="vote.html"><strong aria-hidden="true">5.4.</strong> Vote</a></li><li class="chapter-item expanded "><a href="replication.html"><strong aria-hidden="true">5.5.</strong> Replication</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="delete_log.html"><strong aria-hidden="true">5.5.1.</strong> Delete-conflicting-logs</a></li></ol></li><li class="chapter-item expanded "><a href="extended-membership.html"><strong aria-hidden="true">5.6.</strong> Extended-membership</a></li><li class="chapter-item expanded "><a href="effective-membership.html"><strong aria-hidden="true">5.7.</strong> Effective Membership</a></li></ol></li><li class="chapter-item expanded "><a href="upgrade-tips.html"><strong aria-hidden="true">6.</strong> Upgrade Tips</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="upgrade-v06-v07.html"><strong aria-hidden="true">6.1.</strong> Upgrade from 0.6 to 0.7</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="overview.html">Overview</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="faq.html" class="active"><strong aria-hidden="true">2.</strong> FAQ</a></li><li class="chapter-item expanded "><a href="cluster-controls.html"><strong aria-hidden="true">3.</strong> Cluster Controls</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cluster-formation.html"><strong aria-hidden="true">3.1.</strong> Cluster Formation</a></li><li class="chapter-item expanded "><a href="dynamic-membership.html"><strong aria-hidden="true">3.2.</strong> Dynamic Membership</a></li><li class="chapter-item expanded "><a href="node-lifecycle.html"><strong aria-hidden="true">3.3.</strong> Node lifecycle</a></li></ol></li><li class="chapter-item expanded "><a href="metrics.html"><strong aria-hidden="true">4.</strong> Metrics</a></li><li class="chapter-item expanded "><a href="internal.html"><strong aria-hidden="true">5.</strong> Internal</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">5.1.</strong> Architecture</a></li><li class="chapter-item expanded "><a href="threading.html"><strong aria-hidden="true">5.2.</strong> Threads</a></li><li class="chapter-item expanded "><a href="heartbeat.html"><strong aria-hidden="true">5.3.</strong> Heartbeat</a></li><li class="chapter-item expanded "><a href="vote.html"><strong aria-hidden="true">5.4.</strong> Vote</a></li><li class="chapter-item expanded "><a href="replication.html"><strong aria-hidden="true">5.5.</strong> Replication</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="delete_log.html"><strong aria-hidden="true">5.5.1.</strong> Delete-conflicting-logs</a></li></ol></li><li class="chapter-item expanded "><a href="extended-membership.html"><strong aria-hidden="true">5.6.</strong> Extended-membership</a></li><li class="chapter-item expanded "><a href="effective-membership.html"><strong aria-hidden="true">5.7.</strong> Effective Membership</a></li></ol></li><li class="chapter-item expanded "><a href="upgrade-tips.html"><strong aria-hidden="true">6.</strong> Upgrade Tips</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="upgrade-v06-v07.html"><strong aria-hidden="true">6.1.</strong> Upgrade from 0.6 to 0.7</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,75 +135,27 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="dynamic-membership"><a class="header" href="#dynamic-membership">Dynamic Membership</a></h1>
-<p>Unlike the original raft, openraft treats all membership as a <strong>joint</strong> membership.
-A uniform config is just a special case of joint: the joint of only one config.</p>
-<p>Openraft offers these mechanisms for controlling member node lifecycle:</p>
-<h2 id="membership-api"><a class="header" href="#membership-api">Membership API</a></h2>
-<h3 id="raftadd_learnernode_id-node-blocking"><a class="header" href="#raftadd_learnernode_id-node-blocking"><code>Raft::add_learner(node_id, node, blocking)</code></a></h3>
-<p>This method will add a learner to the cluster,
-and immediately begin syncing logs from the leader.</p>
-<ul>
-<li>A <strong>Learner</strong> won't vote for leadership.</li>
-</ul>
-<h3 id="raftchange_membershipmembers-allow_lagging-turn_to_learner"><a class="header" href="#raftchange_membershipmembers-allow_lagging-turn_to_learner"><code>Raft::change_membership(members, allow_lagging, turn_to_learner)</code></a></h3>
-<p>This method initiates a membership change and returns when the effective
-membership becomes <code>members</code> and is committed.</p>
-<p>If there are nodes in the given membership that is not a <code>Learner</code>, this method will fail.
-Thus the application should always call <code>Raft::add_learner()</code> first.</p>
-<p>Once the new membership is committed, a <code>Voter</code> not in the new config is removed if <code>turn_to_learner=false</code>,
-and it is reverted to a <code>Learner</code> if <code>turn_to_learner=true</code>.</p>
-<h4 id="example-of-turn_to_learner"><a class="header" href="#example-of-turn_to_learner">Example of <code>turn_to_learner</code></a></h4>
-<p>Given the original membership to be <code>{&quot;members&quot;:{1,2,3}, &quot;learners&quot;:{}}</code>,
-call <code>change_membership</code> with <code>members={3,4,5}</code>, then:</p>
-<ul>
-<li>If <code>turn_to_learner=true</code>,  the new membership is <code>{&quot;members&quot;:{3,4,5}, &quot;learners&quot;:{1,2}}</code>.</li>
-<li>If <code>turn_to_learner=false</code>, the new membership is <code>{&quot;members&quot;:{3,4,5}, &quot;learners&quot;:{}}</code>.</li>
-</ul>
-<h2 id="add-a-new-node-as-a-voter"><a class="header" href="#add-a-new-node-as-a-voter">Add a new node as a voter</a></h2>
-<p>To add a new node as a voter:</p>
-<ul>
-<li>First, add it as a <code>learner</code>(non-voter) with <code>Raft::add_learner()</code>.
-In this step, the leader sets up replication to the new node, but it can not vote yet.</li>
-<li>Then turn it into a <code>voter</code> with <code>Raft::change_membership()</code>.</li>
-</ul>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let client = ExampleClient::new(1, get_addr(1)?);
-
-client.add_learner((2, get_addr(2)?)).await?;
-client.add_learner((3, get_addr(3)?)).await?;
-client.change_membership(&amp;btreeset! {1,2,3}).await?;
-<span class="boring">}
-</span></code></pre></pre>
-<p>A complete snippet of adding voters can be found in <a href="https://github.com/datafuselabs/openraft/blob/d041202a9f30b704116c324a6adc4f2ec28029fa/examples/raft-kv-memstore/tests/cluster/test_cluster.rs#L75-L103">the example app</a>.</p>
-<h2 id="remove-a-voter-node"><a class="header" href="#remove-a-voter-node">Remove a voter node</a></h2>
+                        <h1 id="faq"><a class="header" href="#faq">FAQ</a></h1>
 <ul>
 <li>
-<p>Call <code>Raft::change_membership()</code> on the leader to initiate a two-phase
-membership config change, e.g., the leader will propose two config logs:
-joint config log: <code>[{1, 2, 3}, {3, 4, 5}]</code> and then the uniform config log:
-<code>{3, 4, 5}</code>.</p>
+<p>Q: 🤔 Why is heartbeat an append-entries RPC with a blank log in openraft, while standard Raft uses empty append-entries?</p>
+<p>Chapter <a href="./heartbeat.html">Heartbeat</a> explains the benifit of the heartbeat-log design.</p>
 </li>
 <li>
-<p>As soon as the leader commits the second config log, the node to remove can
-be terminated safely.</p>
+<p>Q: 🤔 Why is log id <code>(term, node_id, log_index)</code>, while standard Raft uses just
+<code>(term, log_index)</code>?</p>
+<p>TODO</p>
 </li>
 </ul>
-<p><strong>Note that</strong> An application does not have to wait for the config log to be
-replicated to the node to remove. Because a distributed consensus protocol
-tolerates a minority member crash.</p>
-<p>To read more about openraft's <a href="./extended-membership.html">extended membership algorithm</a>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="cluster-formation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="getting-started.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="node-lifecycle.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="cluster-controls.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -212,10 +164,10 @@ tolerates a minority member crash.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="cluster-formation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="getting-started.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="node-lifecycle.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="cluster-controls.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
